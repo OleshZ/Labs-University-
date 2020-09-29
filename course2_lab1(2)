@@ -1,0 +1,217 @@
+//лаба 1 (9 завдання + а) написано на с#
+//Перевірка правилності дати функція : is_Date_Correct
+//Різниця між часами функція : Difference_With
+//Додавання часу функція : Add.... їх багато
+//Обчислення дня тижню функція : Day_Of_The_Week
+//Номер тижня функція : Number_Of_Week_In
+//
+//
+using System;
+using System.Globalization;
+namespace _1_2_Lab_1Semester_2Course
+{
+    class Program
+    {
+            class Time
+            {
+                private DateTime date;
+            public Time(int year = 0, int month = 0, int day = 0, int hour = 0, int minute = 0, int second = 0)//year - month - day - hour - minute - second
+                {
+
+                    string new_Date = Int_Convert_To_String(year, month, day, hour, minute, second);
+                
+                    if (is_Date_Correct(new_Date))
+                    {
+                        date = new DateTime(year, month, day, hour, minute, second);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Date is not correct");
+                    }
+                }
+            public DateTime Get_Date()
+            {
+                return date;
+            }
+            public void Set_Date(string date_new)//string should be "05/05/2005 8:8:8" this kind
+            {
+                if (is_Date_Correct(date_new))
+                {
+                    date = String_Convert_To_Date(date_new);
+                }
+                else
+                {
+                    Console.WriteLine("Date is not correct");
+                }
+            }
+            public void Day_Of_The_Week()
+            {
+                Console.WriteLine(date.DayOfWeek);
+            }
+                public bool is_Date_Correct(string date_String)
+                {
+                    DateTime dateValue;
+
+                    if (DateTime.TryParse(date_String, out dateValue))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                private DateTime String_Convert_To_Date(string date_new)
+                {
+                DateTime Date = Convert.ToDateTime(date_new);
+                return Date;
+                }
+                private string Int_Convert_To_String(int year = 0, int month = 0, int day = 0, int hour = 0, int minute = 0, int second = 0)//year - month - day - hour - minute - second
+                {
+                    string new_Date = day.ToString() + '/' + month.ToString() + '/' + year.ToString() + ' ' + hour.ToString() + ':' + minute.ToString() + ':' + second.ToString();//convert int date to string
+                    return new_Date;
+                }
+                private string Date_Convert_To_String(DateTime dat)
+                {
+                    string new_Date = dat.ToString("dd/MM/yyyy HH:mm:ss");
+                    return new_Date;
+                }
+                private TimeSpan Difference_Btw_Time(DateTime date2)
+                {
+                TimeSpan output = (date - date2);
+                return output;
+                //var numberOfDays = (futurDate - TodayDate).TotalDays;
+                }
+            public int Difference_With(DateTime second_Date, string measure)
+            {
+                int output = 0;
+
+                if (measure == "year")
+                {
+                    output = (second_Date.Year - date.Year - 1) +
+                    (((second_Date.Month > date.Month) ||
+                    ((second_Date.Month == date.Month) && (second_Date.Day >= date.Day))) ? 1 : 0);
+                    //output = Convert.ToInt32(Difference_Btw_Time(second_Date).TotalYears);
+                }
+                else if (measure == "month")
+                {
+                    //output = Difference_Btw_Time(second_Date).;
+                }
+                else if (measure == "day")
+                {
+                    output = Convert.ToInt32(Difference_Btw_Time(second_Date).TotalDays);
+                }
+                else if (measure == "hour")
+                {
+                    output = Convert.ToInt32(Difference_Btw_Time(second_Date).TotalHours);
+                }
+                else if (measure == "minute")
+                {
+                    output = Convert.ToInt32(Difference_Btw_Time(second_Date).TotalMinutes);
+                }
+                else if (measure == "second")
+                {
+                    output = Convert.ToInt32(Difference_Btw_Time(second_Date).TotalSeconds);
+                }
+                return output;
+            }
+                public void Show_Time()
+                {
+                    Console.WriteLine(date);
+                }
+                public void Add_Time(int amm, string measure)//measure should be without 's' in the end for example: 'year','month' etc
+                {
+                    if (measure == "year")
+                    {
+                        Add_Years(amm);
+                    }
+                    else if (measure == "month")
+                    {
+                        Add_Months(amm);
+                    }
+                    else if (measure == "day")
+                    {
+                        Add_Days(amm);
+                    }
+                    else if (measure == "hour")
+                    {
+                        Add_Hours(amm);
+                    }
+                    else if (measure == "minute")
+                    {
+                        Add_Minutes(amm);
+                    }
+                    else if (measure == "second")
+                    {
+                        Add_Seconds(amm);
+                    }
+                }
+                public void Add_Date(DateTime s_Date)
+                {
+                date = s_Date;
+                }
+                public void Add_Years(int year)
+                {
+                    date = date.AddYears(year);
+                }
+                public void Add_Months(int month)
+                {
+                    date = date.AddMonths(month);
+                }
+                public void Add_Days(int day)
+                {
+                    date = date.AddDays(day);
+                }
+                public void Add_Hours(int hour)
+                {
+                    date = date.AddHours(hour);
+                }
+                public void Add_Minutes(int minute)
+                {
+                    date = date.AddMinutes(minute);
+                }
+                public void Add_Seconds(int second)
+                {
+                    date = date.AddSeconds(second);
+                }
+            public int Number_Of_Week_In(string measure)
+            {
+                if (measure == "year")
+                {
+                    DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
+                    Calendar cal = dfi.Calendar;
+                    return cal.GetWeekOfYear(date, dfi.CalendarWeekRule,
+                                                        dfi.FirstDayOfWeek);
+                }
+                else if (measure == "month")//counting only "pure" weeks that started in this month//+1 if count not full one
+                {
+                    date = date.Date;
+                    DateTime firstMonthDay = new DateTime(date.Year, date.Month, 1);
+                    DateTime firstMonthMonday = firstMonthDay.AddDays((DayOfWeek.Monday + 7 - firstMonthDay.DayOfWeek) % 7);
+                    if (firstMonthMonday > date)
+                    {
+                        firstMonthDay = firstMonthDay.AddMonths(-1);
+                        firstMonthMonday = firstMonthDay.AddDays((DayOfWeek.Monday + 7 - firstMonthDay.DayOfWeek) % 7);
+                    }
+                    return (date - firstMonthMonday).Days / 7 + 1;
+                }
+                Console.WriteLine("Measure input is wrong");
+                return -1;
+            }
+            
+        }
+        static void Main(string[] args)
+        {
+            //DateManager
+            Time date = new Time(2002,3,19,21,0,5);
+            Time date2 = new Time(2005, 5, 5, 21, 0, 5);
+            date.Set_Date("27/9/2020 8:8:8");
+            date.Day_Of_The_Week();
+            Console.WriteLine(date.Number_Of_Week_In("month"));
+            //date.Add_Days(47);
+            Console.WriteLine(date.Get_Date());
+            //Console.WriteLine(date.Difference_With(date2.Get_Date(), "year"));
+            //date.is_Date_Correct("05/01/2009 14:57:61.8");
+        }
+    }
+}
