@@ -1,0 +1,233 @@
+//лаба 1 (4 завдання) написано на с++
+#include <iostream>
+using namespace std;
+struct Sparse_Matrix
+{
+	struct Row
+	{
+		struct Node
+		{
+			int data;
+			int column;
+			Node* pNext;
+			Node()
+			{
+				data = NULL;
+				column = NULL;
+				pNext = nullptr;
+			}
+		};
+		int Row_Number;
+		Row* pNext;
+		Node* tail;
+		Node* head;
+		Row()
+		{
+			Row_Number = NULL;
+			pNext = nullptr;
+			tail = nullptr;
+			head = nullptr;
+		}
+		void add_element(int data, int column);
+		void insert_element(int data, int col, Node* pPrev, Node* pNext);
+		void show_row();
+		void show_full_row(int columns);
+		int row_zeros();
+	};
+	Row* tail_row;
+	Row* head_row;
+	int Columns;
+	int Rows;
+	Sparse_Matrix();
+	//input
+	void add_Row(int* Matrix_line,int row_num);
+	void Create_Matrix(int rows, int columns, int** Matrix);
+	void Plus_Matrix(Sparse_Matrix* Matrix);
+	//output
+	int min_elem_in_matrix();
+	int  ammount_0_in_row(int row);
+	void show_Matrix();
+	void show_full_Matrix();
+
+};
+Sparse_Matrix::Sparse_Matrix()
+{
+	tail_row = nullptr;
+	head_row = nullptr;
+}
+void Sparse_Matrix::Plus_Matrix(Sparse_Matrix* Matrix)
+{
+	if (Matrix->Rows == Rows && Matrix->Columns == Columns)
+	{
+		Row* Cur_Row_1 = tail_row;
+		Row* Cur_Row_2 = Matrix->tail_row;
+		for (int i = 0; i < Rows; i++)
+		{
+			Row::Node* Cur_Node_1 = Cur_Row_1->tail;
+			Row::Node* Cur_Node_2 = Cur_Row_2->tail;
+			for (int k = 0; k < Columns; k++)
+			{
+				if (Cur_Node_1->column == Cur_Node_2->column)
+				{
+					Cur_Node_1->data += 7;
+					if (Cur_Node_1->pNext != nullptr)Cur_Node_1 = Cur_Node_1->pNext;
+					if (Cur_Node_2->pNext != nullptr)Cur_Node_2 = Cur_Node_2->pNext;
+				}
+					/*
+				if (Cur_Node_1->pNext != nullptr)
+					if(Cur_Node_1->pNext->column == k)
+					     Cur_Node_1 = Cur_Node_1->pNext;
+				if (Cur_Node_2->pNext != nullptr)
+					if (Cur_Node_2->pNext->column == k)
+						Cur_Node_2 = Cur_Node_2->pNext;
+						*/
+			}
+
+
+			Cur_Row_1 = Cur_Row_1->pNext;
+			Cur_Row_2 = Cur_Row_2->pNext;
+		}
+	}
+}
+int Sparse_Matrix::ammount_0_in_row(int row)
+{
+	if (tail_row != nullptr&& row <= Rows)
+	{
+		Row* Cur_Row = tail_row;
+		for (int i = 1; i < Rows; i++)
+		{
+			Cur_Row = Cur_Row->pNext;
+			if (i == row)		
+				break;
+		}
+		return Columns - Cur_Row->row_zeros();
+	}
+	return NULL;
+}
+void Sparse_Matrix::Row::insert_element(int dat,int col, Node* pPrev, Node* pNext)
+{
+	Node* New_Node = new Node;
+	New_Node->data = dat;
+	New_Node->column = col;
+	New_Node->pNext = pNext;
+	if (pNext == nullptr)head = New_Node;
+	if (pPrev != nullptr)pPrev->pNext = New_Node;
+	else tail = New_Node;
+}
+int Sparse_Matrix::Row::row_zeros()
+{
+	if (tail != nullptr)
+	{
+		int not_zeros = 1;
+		Node* Cur_Node = tail;
+		while (Cur_Node->pNext != nullptr)
+		{
+			not_zeros++;
+			Cur_Node = Cur_Node->pNext;
+		}
+			return not_zeros;
+	}
+	return 0;
+}
+void Sparse_Matrix::Row::add_element(int dat, int col)
+{
+	Node* New_Node = new Node;
+	New_Node->data = dat;
+	New_Node->column = col;
+	if (tail == nullptr)tail = New_Node;
+	else
+	{
+		head->pNext = New_Node;
+	}
+	head = New_Node;
+}
+void Sparse_Matrix::Row::show_row()
+{
+	if (head != nullptr)
+	{
+		Node* Cur_Node = tail;
+		while (Cur_Node != head)
+		{
+			cout << Cur_Node->data<<" ";
+			Cur_Node = Cur_Node->pNext;
+		}
+		cout << Cur_Node->data << endl;
+	}
+}
+void Sparse_Matrix::Row::show_full_row(int columns)
+{
+	if (tail != nullptr)
+	{
+		Node* Cur_Node = tail;
+		for (int i = 0; i < columns; i++)
+		{
+			if (i == Cur_Node->column)
+			{
+				cout << Cur_Node->data << " ";
+				if (Cur_Node->pNext != nullptr)
+					Cur_Node = Cur_Node->pNext;
+			}
+			else cout << "0" << " ";
+		}
+		cout << endl;
+	}
+}
+void Sparse_Matrix::show_Matrix()
+{
+	if (tail_row != nullptr)
+	{
+		Row* Cur_Node = tail_row;
+		while (Cur_Node != nullptr)
+		{
+			Cur_Node->show_row();
+			Cur_Node = Cur_Node->pNext;
+		}
+	}
+}
+void Sparse_Matrix::show_full_Matrix()
+{
+	if (tail_row != nullptr)
+	{
+		Row* Cur_Node = tail_row;
+		int i = 0;
+		while (Cur_Node != nullptr)
+		{
+			Cur_Node->show_full_row(Columns);
+			Cur_Node = Cur_Node->pNext;
+			i++;
+		}
+	}
+
+}
+void Sparse_Matrix::add_Row(int* Matrix_line,int row_num)
+{
+	Row* New_Row = new Row;
+	New_Row->Row_Number = row_num;
+	if (tail_row == nullptr)
+	{
+		tail_row = New_Row;
+	}
+	else
+	{
+		head_row->pNext = New_Row;
+	}
+	int i = 0;
+	for(int i=0;i<Columns;i++)
+	{
+		if (Matrix_line[i] != 0)
+		{
+			New_Row->add_element(Matrix_line[i], i);
+		}
+	}
+	//head_row->pNext = New_Row;
+	head_row = New_Row;
+}
+void Sparse_Matrix::Create_Matrix(int rows, int columns, int** Matrix)
+{
+	Columns = columns;
+	Rows = rows;
+	for (int i = 0; i < Rows; i++)
+	{
+		add_Row(Matrix[i], i);
+	}
+}
